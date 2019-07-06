@@ -1,0 +1,131 @@
+---
+title: "02 twitter-fingers data"
+author: "Bill Scott"
+date: "`r Sys.Date()`"
+output: 
+  html_notebook: 
+    highlight: pygments
+    theme: cosmo
+    toc: yes
+---
+
+```{r setup, include=FALSE}
+# images folder
+if (!file.exists("figs")) {
+    dir.create("figs")
+}
+# packages
+require(tidyverse)
+require(janitor)
+require(skimr)
+library(mosaic)
+# knitr chunk options
+knitr::opts_chunk$set(echo = TRUE,  
+                      cache = FALSE,
+                      prompt = FALSE,
+                      tidy = FALSE,
+                      fig.width = 8,
+                      fig.height = 6,
+                      comment = "#> ",
+                      message = FALSE,
+                      warning = FALSE,
+                      fig.path = "figs/")
+# knit knit settings
+knitr::opts_knit$set(
+  width = 78)
+# base options
+base::options(
+  tibble.print_max = 25,
+  tibble.width = 78,
+  scipen = 100000000,
+  max.print = 999999)
+# custom functions
+```
+
+## Load packages
+
+```{r packages, message=FALSE, warning=FALSE}
+library(rtweet)
+library(httr)
+library(tidyverse)
+```
+
+
+## Name application 
+
+```{r appname}
+## app name from api set-up
+appname <- "newsandnumbers-twitter-app"
+```
+
+
+
+```{r GoogleCashTag, eval=FALSE}
+## search for 18000 tweets using the rstats hashtag
+GoogleCashTag <- rtweet::search_tweets(
+  "$GOOG", n = 18000, include_rts = TRUE
+)
+write_rds(x = GoogleCashTag, path = "GoogleCashTag.rds")
+```
+
+
+```{r load-GoogleCashtag}
+GoogleCashTag <- readr::read_rds("GoogleCashTag.rds")
+```
+
+
+```{r inspect}
+GoogleCashTag %>% skimr::skim()
+```
+
+### Visualize the tweets of Google Cashtag tweets
+
+```{r}
+GoogleCashTag %>%
+  ts_plot("3 hours") +
+  ggthemes::theme_fivethirtyeight() + 
+  ggplot2::theme(plot.title = ggplot2::element_text(face = "bold")) +
+  ggplot2::labs(
+    x = NULL, y = NULL,
+    title = "Frequency of $GOOG Twitter tweet from past 9 days",
+    subtitle = "Twitter status (tweet) counts aggregated using three-hour intervals",
+    caption = "\nSource: Data collected from Twitter's REST API via rtweet"
+  )
+```
+
+
+## Stream live tweets
+
+This is a streaming collection of live tweets from the following users: 
+
+```{r , eval=FALSE}
+"@aureliusvalue"
+"@viceroyresearch"
+"@citronresearch"
+"@muddywatersresearch"
+"@alderlaneeggs"
+"@contrarianshort"
+"@capitolistpig"
+"@hedgeye"
+```
+
+
+```{r}
+
+```
+
+
+
+```{r AlderStream, eval=FALSE}
+# stream tweets for a week (60 secs x 60 mins * 24 hours *  7 days)
+stream_tweets(
+  "alderlaneeggs, marc, cohodes",
+  timeout = 60 * 60 * 24 * 1,
+  file_name = "tweetsalderlaneeggs.json",
+  parse = FALSE
+)
+# read in the data as a tidy tbl data frame
+AlderStream <- parse_stream("tweetsabouttrump.json")
+```
+
+
